@@ -23,7 +23,14 @@ typedef enum EventManagerResult_t {
     EM_ERROR
 } EventManagerResult;
 
-
+/**
+* createEventManager: Allocates a new EventManager
+*
+* @param date - date in which the system starts operating.
+* @return
+* 	NULL - if allocation failed.
+* 	A new Eventmanager in case of success.
+*/
 EventManager createEventManager(Date date);
 
 void destroyEventManager(EventManager em);
@@ -40,7 +47,7 @@ EventManagerResult emAddMember(EventManager em, char* member_name, int member_id
 
 EventManagerResult emAddMemberToEvent(EventManager em, int member_id, int event_id);
 
-EventManagerResult emRemoveMemberFromEvent (EventManager em, int member_id, int event_id);
+EventManagerResult emRemoveMemberFromEvent(EventManager em, int member_id, int event_id);
 
 EventManagerResult emTick(EventManager em, int days);
 

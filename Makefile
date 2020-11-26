@@ -1,3 +1,5 @@
+GCC_FLAGS = -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
+
 # None of the rules below will actually work right now.
 # Just copied what they provided in the PDF (I kept the exact lines in the rule "csl3_build" below) and made some adjustments.
 # I believe there are mistakes (like eventManagerTests*.c which does not much the file they provided).
@@ -5,16 +7,16 @@
 # ============================================================
 
 event_manager: event_manager.o
-	gcc -std=c99 -o event_manager -Wall -pedantic-errors -Werror -DNDEBUG event_manager.o tests/eventManagerTests*.c -L. -lpriority_queue
+	gcc $(GCC_FLAGS) -o event_manager event_manager.o tests/eventManagerTests*.c -L. -lpriority_queue
 
 priority_queue: priority_queue.o
-	gcc -std=c99 -o priority_queue -Wall -pedantic-errors -Werror -DNDEBUG priority_queue.o tests/pq_example_test.c mtm_pq/*.c 
+	gcc $(GCC_FLAGS) -o priority_queue priority_queue.o tests/pq_example_test.c mtm_pq/*.c 
 
 event_manager.o: event_manager.c
-	gcc -std=c99 -o event_manager.o -Wall -pedantic-errors -Werror -DNDEBUG *.c -L. -lpriority_queue
+	gcc $(GCC_FLAGS) -o event_manager.o *.c -L. -lpriority_queue
 
 priority_queue.o: priority_queue.c
-	gcc -std=c99 -o priority_queue.o -Wall -pedantic-errors -Werror -DNDEBUG mtm_pq/*.c 
+	gcc $(GCC_FLAGS) -o priority_queue.o mtm_pq/*.c 
 
 # ============================================================
 
