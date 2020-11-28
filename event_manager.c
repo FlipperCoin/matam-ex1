@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 #include <stdio.h>
 
 #include "event_manager.h"
@@ -59,7 +60,7 @@ void destroyEventManager(EventManager em) {
     free(em);
 }
 
-static int emFindEventByNameAndDate(EventManager em, char* event_name, Date date) {
+static int emFindEventByNameAndDate(EventManager em, char const *event_name, Date date) {
     for (size_t i = 0; i < em->events_count; i++)
     {
         if (strcmp(eventGetName(em->events[i]), event_name) == 0) {
@@ -118,12 +119,12 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date
     }
 
     if (em->events_count == em->events_max_size) {
-        Event *reallocated_events = reallocarray(em->events, em->events_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Event));
-        if (reallocated_events == NULL) {
+        Event *reallocated_members = reallocarray(em->events, em->events_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Event));
+        if (reallocated_members == NULL) {
             return EM_OUT_OF_MEMORY;
         }
 
-        em->events = reallocated_events;
+        em->events = reallocated_members;
         em->events_max_size += ARRAY_REALLOC_AMOUNT;
     }
 
@@ -224,7 +225,7 @@ static bool isMemberIdValid(int member_id) {
 static int emFindMemberById(EventManager em, int member_id) {
     for (size_t i = 0; i < em->members_count; i++)
     {
-        if(memberGetId(em->members) == member_id) {
+        if(memberGetId(em->members[i]) == member_id) {
             return i;
         }
     }
@@ -251,12 +252,12 @@ EventManagerResult emAddMember(EventManager em, char* member_name, int member_id
     }
 
     if (em->members_count == em->members_max_size) {
-        Event *reallocated_events = reallocarray(em->members, em->members_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Member));
-        if (reallocated_events == NULL) {
+        Member *reallocated_members = reallocarray(em->members, em->members_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Member));
+        if (reallocated_members == NULL) {
             return EM_OUT_OF_MEMORY;
         }
 
-        em->members = reallocated_events;
+        em->members = reallocated_members;
         em->members_max_size += ARRAY_REALLOC_AMOUNT;
     }
 
@@ -400,22 +401,40 @@ char* emGetNextEvent(EventManager em) {
     }
 
     Event next_event = NULL; // NULL is returned if no events are in em
+    Date next_event_date = NULL;
     for (size_t i = 0; i < em->events_count; i++)
     {
         Event event = em->events[i];
+        Date event_date = eventGetDate(event);
+        if (event_date == NULL) {
+            // can't use this event
+            continue;
+        }
         if (next_event == NULL) {
             next_event = event;
-        } else {
+            next_event_date = event_date;
+        } 
+        else {
             // Relies on the fact that the order in the array is the order of insertion to the system.
             // Because of the requirement that if the events are on the same day, the event that should 
             // be returned is the event that got inserted first.
-            if (dateCompare(next_event, event) > 0) {
+            if (dateCompare(next_event_date, event_date) > 0) {
                 next_event = event;
+                next_event_date = event_date;
             }
         }
     }
     
-    return next_event;
+    if (next_event == NULL) {
+        return NULL;
+    }
+    char const *event_name = eventGetName(next_event);
+    if (event_name == NULL) {
+        return NULL;
+    }
+    char *event_name_copy = (char*)malloc(strlen(event_name));
+    strcpy(event_name_copy, event_name);
+    return event_name_copy;
 }
 
 int intCompare(const void * a, const void * b) {
@@ -443,8 +462,7 @@ static char* getMembersString(EventManager em, Event event) {
     sortIntArray(members_temp, members_count);
     members = (int const *)members_temp;
 
-    char *members_names[members_count]; 
-    char *empty_string = "";
+    char const *members_names[members_count]; 
     char *members_delimeter = ",";
     int members_string_size = 1; // '\0' terminator in the end
     
@@ -454,8 +472,8 @@ static char* getMembersString(EventManager em, Event event) {
         if (member_index == NO_INDEX) {
             return NULL;
         }
-        Member member = members[member_index];
-        char *member_name = memberGetName(member);
+        Member member = em->members[member_index];
+        char const *member_name = memberGetName(member);
         if (member_name == NULL) {
             return NULL;
         }
@@ -606,7 +624,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
     
     for (size_t i = 0; i < em->events_count; i++)
     {
-        Member *members = eventGetMembers(em->events[i]);
+        int const *members = eventGetMembers(em->events[i]);
         if (members == NULL) {
             continue;
         }
@@ -618,7 +636,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
 
         for (size_t j = 0; j < membersCount; j++)
         {
-            int member_index = emFindMemberById(em, memberGetId(members[j]));
+            int member_index = emFindMemberById(em, members[j]);
             if (member_index == NO_INDEX) {
                 continue;
             }
@@ -642,7 +660,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
     }
 
     PQ_FOREACH(MemberEvents_t*, member_event, member_events_queue) {
-        fprintf(file, "%s,%d", member_event->member_name, member_event->events_count);
+        fprintf(file, "%s,%ld", member_event->member_name, member_event->events_count);
     }       
     
     pqDestroy(member_events_queue);

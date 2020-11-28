@@ -5,7 +5,7 @@
 
 struct Member_t {
     int id;
-    char *name;
+    char const *name;
 };
 
 int memberGetId(Member member) {
@@ -52,7 +52,8 @@ MemberResult memberSetName(Member member, char const* name) {
         return M_OUT_OF_MEMORY;
     }
     strcpy(name_copy, name);
-    member->name = name_copy;
+    free((char*)member->name);
+    member->name = (char const *)name_copy;
 
     return M_SUCCESS;
 }
