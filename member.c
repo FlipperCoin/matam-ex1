@@ -17,7 +17,7 @@ Member memberCreate(int member_id, char* member_name) {
     if (member == NULL) return NULL;
 
     member->id = member_id;
-    char *member_name_copy = (char*)malloc(strlen(member_name));
+    char *member_name_copy = (char*)malloc(strlen(member_name)+1);
     strcpy(member_name_copy, member_name);
     member->name = (char const *)member_name_copy;
     return member;
@@ -67,7 +67,7 @@ MemberResult memberSetName(Member member, char const* name) {
         return M_INVALID_MEMBER_NAME;
     }
 
-    char *name_copy = malloc(name_length*sizeof(char));
+    char *name_copy = malloc((name_length+1)*sizeof(char));
     if (name_copy == NULL) {
         return M_OUT_OF_MEMORY;
     }

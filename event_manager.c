@@ -432,7 +432,7 @@ char* emGetNextEvent(EventManager em) {
     if (event_name == NULL) {
         return NULL;
     }
-    char *event_name_copy = (char*)malloc(strlen(event_name));
+    char *event_name_copy = (char*)malloc(strlen(event_name)+1);
     strcpy(event_name_copy, event_name);
     return event_name_copy;
 }

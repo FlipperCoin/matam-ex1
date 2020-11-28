@@ -77,10 +77,11 @@ EventResult eventSetName(Event event, char const* name) {
     if (event == NULL || name == NULL) {
         return E_NULL_ARGUMENT;
     }
-    char const *name_copy = malloc(strlen(name));
+    char *name_copy = malloc(strlen(name)+1);
     if (name_copy == NULL) {
         return E_OUT_OF_MEMORY;
     }
+    strcpy(name_copy, name);
     free((char*)event->name);
     event->name = (char const *)name_copy;
     return E_SUCCESS; 
