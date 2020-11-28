@@ -437,7 +437,7 @@ char* emGetNextEvent(EventManager em) {
     return event_name_copy;
 }
 
-int intCompare(const void * a, const void * b) {
+static int intCompare(const void * a, const void * b) {
     return (*(int*)a - *(int*)b);
 }
 

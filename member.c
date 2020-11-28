@@ -3,10 +3,30 @@
 
 #include "member.h"
 
-struct Member_t {
+struct Member_t{
     int id;
     char const *name;
 };
+
+Member memberCreate(int member_id, char* member_name) {
+    if (member_name == NULL) {
+        return NULL;
+    }
+
+    Member member = (Member)malloc(sizeof(struct Member_t));
+    if (member == NULL) return NULL;
+
+    member->id = member_id;
+    char *member_name_copy = (char*)malloc(strlen(member_name));
+    strcpy(member_name_copy, member_name);
+    member->name = (char const *)member_name_copy;
+    return member;
+}
+
+void memberDestroy(Member member) {
+    free((char*)member->name);
+    free(member);
+}
 
 int memberGetId(Member member) {
     if (member == NULL) {

@@ -6,7 +6,7 @@ GCC_FLAGS = -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
 # Will eventually check in forums/FAQ for any updates.
 # ============================================================
 
-event_manager: event_manager.o event.o member.o
+event_manager: event_manager.o event.o member.o date.o
 	gcc $(GCC_FLAGS) -o event_manager $^ tests/event_manager_example_tests.c -L. -lpriority_queue
 
 priority_queue: priority_queue.o
