@@ -533,27 +533,55 @@ typedef struct MemberEvents {
 } MemberEvents_t;
 
 PQElement memberEventsCopy(PQElement member_events) {
-
+    // TODO: Check if member_name should be copied aswell to a different pointer.
+    // Its a pointer to const so can't change data, but the pointer can be freed which is problematic
+    // dependes on pq's insert function. 
+    // if it uses copy and only inserts the copy then I should copy the name pointer aswell.
+    MemberEvents_t *copy = (MemberEvents_t*)malloc(sizeof(MemberEvents_t));
+    *copy = *(MemberEvents_t*)member_events;
+    return copy;
 }
 
 void memberEventsFree(PQElement member_events) {
-
+    // TODO: Check if to free the member_name (comment in events copy)
+    free(member_events);
 }
 
-bool memberEventsEquals(PQElement member_events1, PQElement member_events2) {
+bool memberEventsEquals(PQElement element1, PQElement element2) {
+    MemberEvents_t *member_events1 = (MemberEvents_t*)element1;
+    MemberEvents_t *member_events2 = (MemberEvents_t*)element2;
 
+    if (member_events1->member_id != member_events2->member_id || 
+        member_events1->events_count != member_events2->events_count) {
+            return false; 
+    }
+
+    return (strcmp(member_events1->member_name, member_events2->member_name) != 0);
 }
 
 PQElementPriority memberEventsCopyPriority(PQElementPriority member_events) {
-
+    // TODO: check if copy name
+    MemberEvents_t *copy = (MemberEvents_t*)malloc(sizeof(MemberEvents_t));
+    *copy = *(MemberEvents_t*)member_events;
+    return copy;
 }
 
 void memberEventsFreePriority(PQElementPriority member_events) {
-
+    // TODO: check if free name
+    free(member_events);
 }
 
-int memberEventsCompare(PQElementPriority member_events1, PQElementPriority member_events2) {
+int memberEventsCompare(PQElementPriority element1, PQElementPriority element2) {
+    MemberEvents_t *member_events1 = (MemberEvents_t*)element1;
+    MemberEvents_t *member_events2 = (MemberEvents_t*)element2;
+    
+    int comparison = member_events1->events_count - member_events2->events_count;
+    if (comparison == 0) {
+        // element2 minus element1 because lower id has greater priority
+        comparison = member_events2->member_id - member_events1->member_id;
+    }
 
+    return comparison;
 }
 
 void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
