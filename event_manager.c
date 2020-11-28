@@ -57,6 +57,19 @@ EventManager createEventManager(Date date) {
 }
 
 void destroyEventManager(EventManager em) {
+    for (size_t i = 0; i < em->events_count; i++)
+    {
+        eventDestroy(em->events[i]);
+    }
+    
+    for (size_t i = 0; i < em->members_count; i++)
+    {
+        memberDestroy(em->members[i]);
+    }
+
+    free(em->events);
+    free(em->members);
+    free(em->system_date);
     free(em);
 }
 
@@ -152,7 +165,9 @@ EventManagerResult emAddEventByDiff(EventManager em, char* event_name, int days,
         dateTick(event_date);
     }
 
-    return emAddEventByDate(em, event_name, event_date, event_id);
+    EventManagerResult result = emAddEventByDate(em, event_name, event_date, event_id);
+    dateDestroy(event_date);
+    return result;
 }
 
 EventManagerResult emRemoveEvent(EventManager em, int event_id) {
@@ -343,6 +358,7 @@ static void flushOldEvents(EventManager em) {
         // Bad event, removing cause there's no use in keeping it
         if (event_date == NULL || dateCompare(event_date, em->system_date) < 0) {
             removed++;
+            eventDestroy(em->events[i]);
             em->events[i] = NULL;
         }
     }
@@ -429,12 +445,7 @@ char* emGetNextEvent(EventManager em) {
         return NULL;
     }
     char const *event_name = eventGetName(next_event);
-    if (event_name == NULL) {
-        return NULL;
-    }
-    char *event_name_copy = (char*)malloc(strlen(event_name)+1);
-    strcpy(event_name_copy, event_name);
-    return event_name_copy;
+    return (char*)event_name;
 }
 
 static int intCompare(const void * a, const void * b) {
