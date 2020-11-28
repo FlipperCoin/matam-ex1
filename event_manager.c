@@ -330,8 +330,8 @@ EventManagerResult emRemoveMemberFromEvent(EventManager em, int member_id, int e
         return EM_INVALID_EVENT_ID;
     }
 
-    int member_index = emFindMemberById(em, member_id);
-    if (member_index == NO_INDEX) {
+    // need to fail if member id is not known, no real need for the member's index
+    if (emFindMemberById(em, member_id) == NO_INDEX) {
         return EM_MEMBER_ID_NOT_EXISTS;
     }
 
@@ -659,7 +659,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
     for (size_t i = 0; i < em->members_count; i++)
     {
         MemberEvents_t member = member_events[i];
-        if (!isMemberIdValid(member.member_id) || member.member_name == NULL) {
+        if (!isMemberIdValid(member.member_id) || member.member_name == NULL || member.events_count == 0) {
             continue;
         }
         pqInsert(member_events_queue, &member_events[i], &member_events[i]);

@@ -7,10 +7,13 @@ GCC_FLAGS = -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
 # ============================================================
 
 event_manager: event_manager.o event.o member.o date.o
-	gcc $(GCC_FLAGS) -o event_manager $^ tests/event_manager_example_tests.c -L. -lpriority_queue
+	gcc $(GCC_FLAGS) -o event_manager $^ tests/event_manager_tests.c -L. -lpriority_queue
 
 priority_queue: priority_queue.o
 	gcc $(GCC_FLAGS) -o priority_queue priority_queue.o tests/pq_example_test.c mtm_pq/*.c 
+
+date: date.o
+	gcc $(GCC_FLAGS) -o date $^ tests/date_tests.c -L.
 
 %.o: %.c
 	gcc $(GCC_FLAGS) -c -o $@ $< -L. -lpriority_queue
@@ -26,9 +29,20 @@ csl3_build:
 	gcc -std=c99 -o priority_queue -Wall -pedantic-errors -Werror -DNDEBUG tests/pq_example_test.c mtm_pq/*.c 
 
 # PHONY means that the rule name "clean" doesn't correspond to a file's name
-.PHONY: clean
+.PHONY: clean test test_priority_queue test_date test_event_manager
 
 clean:
 	rm *.o
 	rm event_manager
 	rm priority_queue
+
+test: test_priority_queue test_date test_event_manager 
+
+test_priority_queue: priority_queue
+	./priority_queue
+
+test_date: date
+	./date
+
+test_event_manager: event_manager
+	./event_manager

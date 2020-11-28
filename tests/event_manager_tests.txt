@@ -1,0 +1,60 @@
+call all functions with nulls, return null or EM_NULL
+create, date good, success
+create, date bad, fail
+destroy, contains stuff, removes all (might rely on valgrind)
+add event by date, valid, success
+add event by date, name not good, fail
+add event by date, date old, fail
+add event by date, id not valid, fail
+add event by date, exists with same everything, fail
+add event by date, exists with same id, fail
+add event by date, exists with same name and date, fail
+add event by date, exists with same name different date, success
+add event by date, exists with different name same date, success
+add event by date, already added 25 events, success
+add event by date, print events, there
+add event by diff, days negative, fail
+add event by diff, tick less, still exists
+add event by diff, tick exact, doesn't exist
+add event by diff, tick more, doesn't exist
+add event by diff, print events, there
+remove event, id exists, remove & succeed
+remove event, id doesn't exist, fail
+remove event, print events, not there
+change event date, date not valid (old), fail
+change event date, id not valid, fail
+change event date, doesn't exist, fail
+change event date, exist with same date, fail
+change event date, exist & unique date, success
+change event date, tick doesnt remove on old date, remove on new date
+change event date, print events, printed new date
+add member, id not valid, fail
+add member, id exists, fail
+add member, valid, success
+add member, already 25 members exist, success
+add member to event, member id not valid, fail
+add member to event, event id not valid, fail
+add member to event, member doesn't exist, fail
+add member to event, event doesn't exist, fail
+add member to event, all good, success
+add member to event, print events, member in event
+remove member from event
+remove member from event, member id not valid, fail
+remove member from event, event id not valid, fail
+remove member from event, member doesn't exist, fail
+remove member from event, event doesn't exist, fail
+remove member from event, member's not linked to event, fail
+remove member from event, all good, success
+remove member from event, print events, member not in event
+tick, remove exact on each tick, print each time updated
+get events amount, return amount
+get next event, no events, null
+get next event, events added at random, return closest event
+get next event, events removed and get next event again, return closest event
+get next event, 2 events on the same date, return the one inserted first
+print all events, several members, print members in each event in ascending id order
+print all events, several events, print ascending date order
+print all events, random all over the place, print correctly
+print members, several members with several events, print descending order on amount of events
+print members, 2 members with the same amount of events, print ascending id
+print members, member with 0 events, not printed
