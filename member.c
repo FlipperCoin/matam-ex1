@@ -3,7 +3,7 @@
 
 #include "member.h"
 
-struct Member_t{
+struct Member_t {
     int id;
     char const *name;
 };

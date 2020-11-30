@@ -549,6 +549,47 @@ static char* getMembersString(EventManager em, Event event) {
     return members_string;
 }
 
+static void orderEvents(EventManager em, Event *buffer) {
+    Date date = em->system_date;
+    int order = 1;
+    for (size_t i = 0; i < em->events_count; i++)
+    {
+        Event event = emGetNextEventOnDate(em, date, order++);
+        if (event == NULL) {
+            event = emGetNextEventAfterDate(em, date);
+            date = eventGetDate(event);
+            order = 2;
+        }
+        buffer[i] = event;
+    }
+}
+
+static void printEventToFile(EventManager em, Event event, FILE *file) {
+    Date event_date = eventGetDate(event);
+    if (event_date == NULL) {
+        return;
+    }
+    
+    int day, month, year;
+    if (!dateGet(event_date, &day, &month, &year)) {
+        return;
+    }
+    
+    char const *event_name = eventGetName(event);
+    if (event_name == NULL) {
+        return;
+    }
+
+    char *members_string = getMembersString(em, event);
+    if (members_string == NULL) {
+        return;
+    }
+    
+    fprintf(file, "%s,%d.%d.%d,%s", event_name, day, month, year, members_string);
+
+    free(members_string);
+}
+
 void emPrintAllEvents(EventManager em, const char* file_name) {
     if (em == NULL || file_name == NULL) {
         return;
@@ -569,69 +610,37 @@ void emPrintAllEvents(EventManager em, const char* file_name) {
         return;
     }
 
-    Date date = em->system_date;
-    int order = 1;
-    for (size_t i = 0; i < em->events_count; i++)
-    {
-        Event event = emGetNextEventOnDate(em, date, order++);
-        if (event == NULL) {
-            event = emGetNextEventAfterDate(em, date);
-            date = eventGetDate(event);
-            order = 2;
-        }
-        ordered_events[i] = event;
-    }
-    
+    orderEvents(em, ordered_events);
 
     for (size_t i = 0; i < em->events_count; i++)
     {
         Event event = ordered_events[i];
         
-        Date event_date = eventGetDate(event);
-        if (event_date == NULL) {
-            continue;
-        }
+        printEventToFile(em, event, file);
         
-        int day, month, year;
-        if (!dateGet(event_date, &day, &month, &year)) {
-            continue;
-        }
-        
-        char const *event_name = eventGetName(event);
-        if (event_name == NULL) {
-            continue;
-        }
-
-        char *members_string = getMembersString(em, event);
-        if (members_string == NULL) {
-            continue;
-        }
-        
-        fprintf(file, "%s,%d.%d.%d,%s", event_name, day, month, year, members_string);
         if (i < (em->events_count - 1)) {
             fprintf(file, "\n");
         }
-
-        free(members_string);
     }
+
     free(ordered_events);
     fflush(file);
     fclose(file);
 }
 
-typedef struct MemberEvents {
+typedef struct {
     int member_id;
     char const *member_name;
     size_t events_count;
-} MemberEvents_t;
+} MemberEvents;
 
 PQElement memberEventsCopy(PQElement member_events) {
     // TODO: Check if member_name should be copied aswell to a different pointer.
     // Its a pointer to const so can't change data, but the pointer can be freed which is problematic
     // dependes on pq's insert function. 
     // if it uses copy and only inserts the copy then I should copy the name pointer aswell.
-    MemberEvents_t *copy = (MemberEvents_t*)malloc(sizeof(MemberEvents_t));
-    *copy = *(MemberEvents_t*)member_events;
+    MemberEvents *copy = (MemberEvents*)malloc(sizeof(MemberEvents));
+    *copy = *(MemberEvents*)member_events;
     return copy;
 }
 
@@ -641,8 +650,8 @@ void memberEventsFree(PQElement member_events) {
 }
 
 bool memberEventsEquals(PQElement element1, PQElement element2) {
-    MemberEvents_t *member_events1 = (MemberEvents_t*)element1;
-    MemberEvents_t *member_events2 = (MemberEvents_t*)element2;
+    MemberEvents *member_events1 = (MemberEvents*)element1;
+    MemberEvents *member_events2 = (MemberEvents*)element2;
 
     if (member_events1->member_id != member_events2->member_id || 
         member_events1->events_count != member_events2->events_count) {
@@ -654,8 +663,8 @@ bool memberEventsEquals(PQElement element1, PQElement element2) {
 
 PQElementPriority memberEventsCopyPriority(PQElementPriority member_events) {
     // TODO: check if copy name
-    MemberEvents_t *copy = (MemberEvents_t*)malloc(sizeof(MemberEvents_t));
-    *copy = *(MemberEvents_t*)member_events;
+    MemberEvents *copy = (MemberEvents*)malloc(sizeof(MemberEvents));
+    *copy = *(MemberEvents*)member_events;
     return copy;
 }
 
@@ -665,8 +674,8 @@ void memberEventsFreePriority(PQElementPriority member_events) {
 }
 
 int memberEventsCompare(PQElementPriority element1, PQElementPriority element2) {
-    MemberEvents_t *member_events1 = (MemberEvents_t*)element1;
-    MemberEvents_t *member_events2 = (MemberEvents_t*)element2;
+    MemberEvents *member_events1 = (MemberEvents*)element1;
+    MemberEvents *member_events2 = (MemberEvents*)element2;
     
     int comparison = member_events1->events_count - member_events2->events_count;
     if (comparison == 0) {
@@ -677,23 +686,14 @@ int memberEventsCompare(PQElementPriority element1, PQElementPriority element2) 
     return comparison;
 }
 
-void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
-    if (em == NULL || file_name == NULL) {
-        return;
-    }
-    PriorityQueue member_events_queue = pqCreate(memberEventsCopy, memberEventsFree, memberEventsEquals, memberEventsCopyPriority, memberEventsFreePriority, memberEventsCompare);
-    if (member_events_queue == NULL) {
-        return;
-    }
-
-    MemberEvents_t member_events[em->members_count];
+static void initMemberEvents(EventManager em, MemberEvents *member_events) {
     for (size_t i = 0; i < em->members_count; i++)
     {
         Member member = em->members[i];
         int member_id = memberGetId(member);
         char const *member_name = memberGetName(member);
         // Can set an invalid id/name here if get functions fail, is OK because handled later
-        member_events[i] = (MemberEvents_t) { member_id, member_name, 0 };
+        member_events[i] = (MemberEvents) { member_id, member_name, 0 };
     }
 
     for (size_t i = 0; i < em->events_count; i++)
@@ -718,10 +718,23 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
             member_events[member_index].events_count++;
         }
     }
+}
+
+void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
+    if (em == NULL || file_name == NULL) {
+        return;
+    }
+    PriorityQueue member_events_queue = pqCreate(memberEventsCopy, memberEventsFree, memberEventsEquals, memberEventsCopyPriority, memberEventsFreePriority, memberEventsCompare);
+    if (member_events_queue == NULL) {
+        return;
+    }
+
+    MemberEvents member_events[em->members_count];
+    initMemberEvents(em, member_events);
 
     for (size_t i = 0; i < em->members_count; i++)
     {
-        MemberEvents_t member = member_events[i];
+        MemberEvents member = member_events[i];
         if (!isMemberIdValid(member.member_id) || member.member_name == NULL || member.events_count == 0) {
             continue;
         }
@@ -733,7 +746,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         return;
     }
 
-    PQ_FOREACH(MemberEvents_t*, member_event, member_events_queue) {
+    PQ_FOREACH(MemberEvents*, member_event, member_events_queue) {
         fprintf(file, "%s,%ld", member_event->member_name, member_event->events_count);
     }       
     

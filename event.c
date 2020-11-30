@@ -59,6 +59,7 @@ void eventDestroy(Event event) {
 int eventGetId(Event event) { 
     return event->id; 
 }
+
 EventResult eventSetId(Event event, int id) { 
     if (event == NULL) {
         return E_NULL_ARGUMENT;
@@ -69,12 +70,14 @@ EventResult eventSetId(Event event, int id) {
     event->id=id;
     return E_SUCCESS; 
 }
+
 char const* eventGetName(Event event) { 
     if (event == NULL) {
         return NULL;
     }
     return event->name; 
 }
+
 EventResult eventSetName(Event event, char const* name) { 
     if (event == NULL || name == NULL) {
         return E_NULL_ARGUMENT;
@@ -88,12 +91,14 @@ EventResult eventSetName(Event event, char const* name) {
     event->name = (char const *)name_copy;
     return E_SUCCESS; 
 }
+
 Date eventGetDate(Event event) {
     if (event == NULL) {
         return NULL;
     } 
     return event->date; 
 }
+
 EventResult eventSetDate(Event event, Date date) { 
     if (event == NULL || date == NULL) {
         return E_NULL_ARGUMENT;
@@ -106,12 +111,14 @@ EventResult eventSetDate(Event event, Date date) {
     event->date = date_copy;
     return E_SUCCESS; 
 }
+
 int const* eventGetMembers(Event event) { 
     if (event == NULL) {
         return NULL;
     }
     return event->members; 
 }
+
 int eventGetMembersCount(Event event) { 
     if (event == NULL) {
         return -1;
@@ -119,6 +126,7 @@ int eventGetMembersCount(Event event) {
 
     return event->members_count;
 }
+
 EventResult eventSetMembers(Event event, int const* members, size_t length) { 
     if (event == NULL || members == NULL) {
         return E_NULL_ARGUMENT;
@@ -135,6 +143,7 @@ EventResult eventSetMembers(Event event, int const* members, size_t length) {
     event->members_max_size = length;
     return E_SUCCESS;
 }
+
 EventResult eventAddMember(Event event, int member_id) {
     if (event == NULL) {
         return E_NULL_ARGUMENT;
@@ -162,6 +171,7 @@ EventResult eventAddMember(Event event, int member_id) {
     event->members[event->members_count++] = member_id;
     return E_SUCCESS;
 }
+
 EventResult eventRemoveMember(Event event, int member_id) {
     if (event == NULL) {
         return E_NULL_ARGUMENT;
@@ -184,4 +194,3 @@ EventResult eventRemoveMember(Event event, int member_id) {
     }
     return member_exists ? E_SUCCESS : E_MEMBER_NOT_EXISTS;
 }
-
