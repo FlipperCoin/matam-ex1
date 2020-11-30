@@ -40,6 +40,8 @@ Event eventCreate(char* event_name, Date date, int event_id) {
         return NULL;
     }
     event->members = members;
+    event->members_count = 0;
+    event->members_max_size = MEMBERS_MAX_SIZE_INIT;
 
     event->id = event_id;
 
@@ -61,7 +63,7 @@ EventResult eventSetId(Event event, int id) {
     if (event == NULL) {
         return E_NULL_ARGUMENT;
     }
-    if (id <= 0) {
+    if (id < 0) {
         return E_INVALID_EVENT_ID;
     }
     event->id=id;
@@ -137,15 +139,24 @@ EventResult eventAddMember(Event event, int member_id) {
     if (event == NULL) {
         return E_NULL_ARGUMENT;
     }
-    if (member_id <= 0) {
+    if (member_id < 0) {
         return E_INVALID_MEMBER_ID;
     }
+
+    for (size_t i = 0; i < event->members_count; i++)
+    {
+        if (event->members[i] == member_id) {
+            return E_MEMBER_ALREADY_EXISTS;
+        }
+    }
+
     if(event->members_count == event->members_max_size) {
         int *reallocated_members = reallocarray(event->members, event->members_count + MEMBERS_SIZE_INCREASE, sizeof(int));
         if (reallocated_members == NULL) {
             return E_OUT_OF_MEMORY;
         }
         event->members_max_size += MEMBERS_SIZE_INCREASE;
+        event->members = reallocated_members;
     }
 
     event->members[event->members_count++] = member_id;
@@ -155,9 +166,11 @@ EventResult eventRemoveMember(Event event, int member_id) {
     if (event == NULL) {
         return E_NULL_ARGUMENT;
     }
+    bool member_exists = false;
     for (size_t i = 0; i < event->members_count; i++)
     {
         if (event->members[i] == member_id) {
+            member_exists = true;
             for (size_t j = i; j < (event->members_count-1); j++)
             {
                 event->members[j] = event->members[j+1];
@@ -169,6 +182,6 @@ EventResult eventRemoveMember(Event event, int member_id) {
             return E_SUCCESS;
         }
     }
-    return E_SUCCESS;
+    return member_exists ? E_SUCCESS : E_MEMBER_NOT_EXISTS;
 }
 

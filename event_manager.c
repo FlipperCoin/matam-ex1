@@ -26,13 +26,17 @@ struct EventManager_t {
     Date system_date;
 };
 
-EventManager createEventManager(Date date) {
+EventManager createEventManager(Date after_date) {
+    if (after_date == NULL) {
+        return NULL;
+    }
+    
     EventManager event_manager = (EventManager)malloc(sizeof(struct EventManager_t));
     if (event_manager == NULL) {
         return NULL;
     }   
 
-    Date system_date = dateCopy(date);
+    Date system_date = dateCopy(after_date);
     if (system_date == NULL) {
         return NULL;
     }
@@ -73,11 +77,11 @@ void destroyEventManager(EventManager em) {
     free(em);
 }
 
-static int emFindEventByNameAndDate(EventManager em, char const *event_name, Date date) {
+static int emFindEventByNameAndDate(EventManager em, char const *event_name, Date after_date) {
     for (size_t i = 0; i < em->events_count; i++)
     {
         if (strcmp(eventGetName(em->events[i]), event_name) == 0) {
-            if (dateCompare(eventGetDate(em->events[i]),date) == 0) {
+            if (dateCompare(eventGetDate(em->events[i]),after_date) == 0) {
                 return i;
             }
         }
@@ -97,20 +101,20 @@ static int emFindEventById(EventManager em, int event_id) {
     return NO_INDEX;
 }
 
-static bool isEventDateValid(EventManager em, Date date) {
-    return dateCompare(date,em->system_date) >= 0;
+static bool isEventDateValid(EventManager em, Date after_date) {
+    return dateCompare(after_date,em->system_date) >= 0;
 }
 
 static bool isEventIdValid(int event_id) {
     return event_id >= 0;
 }
 
-EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date, int event_id) {
-    if (em == NULL || event_name == NULL || date == NULL) {
+EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date after_date, int event_id) {
+    if (em == NULL || event_name == NULL || after_date == NULL) {
         return EM_NULL_ARGUMENT;
     }
 
-    if (!isEventDateValid(em, date)) {
+    if (!isEventDateValid(em, after_date)) {
         return EM_INVALID_DATE;
     }
 
@@ -118,7 +122,7 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date
         return EM_INVALID_EVENT_ID;
     }
 
-    if (emFindEventByNameAndDate(em,event_name,date) >= 0) {
+    if (emFindEventByNameAndDate(em,event_name,after_date) >= 0) {
         return EM_EVENT_ALREADY_EXISTS;
     }
 
@@ -126,7 +130,7 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date
         return EM_EVENT_ID_ALREADY_EXISTS;
     }
 
-    Event event = eventCreate(event_name,date,event_id);
+    Event event = eventCreate(event_name,after_date,event_id);
     if (event == NULL) {
         return EM_OUT_OF_MEMORY;
     }
@@ -411,11 +415,29 @@ int emGetEventsAmount(EventManager em) {
     return em->events_count;
 }
 
-char* emGetNextEvent(EventManager em) {
-    if (em == NULL) {
-        return NULL;
-    }
+static Event emGetNextEventOnDate(EventManager em, Date date, int order){
+    int counter = 0;
+    for (size_t i = 0; i < em->events_count; i++)
+    {
+        Event event = em->events[i];
+        Date event_date = eventGetDate(event);
+        if (event_date == NULL) {
+            // can't use this event
+            continue;
+        }
 
+        if (dateCompare(event_date, date) == 0) {
+            counter++;
+            if (counter == order) {
+                return event;
+            }
+        }
+    }
+    
+    return NULL;
+}
+
+static Event emGetNextEventAfterDate(EventManager em, Date after_date) {
     Event next_event = NULL; // NULL is returned if no events are in em
     Date next_event_date = NULL;
     for (size_t i = 0; i < em->events_count; i++)
@@ -426,20 +448,35 @@ char* emGetNextEvent(EventManager em) {
             // can't use this event
             continue;
         }
+
+        if (after_date != NULL && dateCompare(event_date, after_date) <= 0) {
+            continue;
+        }
+
+        // Relies on the fact that the order in the array is the order of insertion to the system.
+        // Because of the requirement that if the events are on the same day, the event that should 
+        // be returned is the event that got inserted first.
         if (next_event == NULL) {
             next_event = event;
             next_event_date = event_date;
+            continue;
         } 
-        else {
-            // Relies on the fact that the order in the array is the order of insertion to the system.
-            // Because of the requirement that if the events are on the same day, the event that should 
-            // be returned is the event that got inserted first.
-            if (dateCompare(next_event_date, event_date) > 0) {
-                next_event = event;
-                next_event_date = event_date;
-            }
+
+        if (dateCompare(next_event_date, event_date) > 0) {
+            next_event = event;
+            next_event_date = event_date;
         }
     }
+
+    return next_event;
+}
+
+char* emGetNextEvent(EventManager em) {
+    if (em == NULL) {
+        return NULL;
+    }
+
+    Event next_event = emGetNextEventAfterDate(em, NULL);
     
     if (next_event == NULL) {
         return NULL;
@@ -516,33 +553,58 @@ void emPrintAllEvents(EventManager em, const char* file_name) {
     if (em == NULL || file_name == NULL) {
         return;
     }
+
+    if (em->events_count < 1) {
+        return;
+    }
+
     FILE *file = fopen(file_name, "w");
     if (file == NULL) {
         return;
     }
 
+    Event *ordered_events = (Event*)malloc(sizeof(Event) * em->events_count);
+    if (ordered_events == NULL) {
+        fclose(file);
+        return;
+    }
+
+    Date date = em->system_date;
+    int order = 1;
     for (size_t i = 0; i < em->events_count; i++)
     {
-        Event event = em->events[i];
+        Event event = emGetNextEventOnDate(em, date, order++);
+        if (event == NULL) {
+            event = emGetNextEventAfterDate(em, date);
+            date = eventGetDate(event);
+            order = 2;
+        }
+        ordered_events[i] = event;
+    }
+    
+
+    for (size_t i = 0; i < em->events_count; i++)
+    {
+        Event event = ordered_events[i];
         
         Date event_date = eventGetDate(event);
         if (event_date == NULL) {
-            break;
+            continue;
         }
         
         int day, month, year;
-        if (dateGet(event_date, &day, &month, &year)) {
-            break;
+        if (!dateGet(event_date, &day, &month, &year)) {
+            continue;
         }
         
         char const *event_name = eventGetName(event);
         if (event_name == NULL) {
-            break;
+            continue;
         }
 
         char *members_string = getMembersString(em, event);
         if (members_string == NULL) {
-            break;
+            continue;
         }
         
         fprintf(file, "%s,%d.%d.%d,%s", event_name, day, month, year, members_string);
@@ -552,6 +614,8 @@ void emPrintAllEvents(EventManager em, const char* file_name) {
 
         free(members_string);
     }
+    free(ordered_events);
+    fflush(file);
     fclose(file);
 }
 
@@ -617,11 +681,12 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
     if (em == NULL || file_name == NULL) {
         return;
     }
-
+    printf("not a criminal yet\n");
     PriorityQueue member_events_queue = pqCreate(memberEventsCopy, memberEventsFree, memberEventsEquals, memberEventsCopyPriority, memberEventsFreePriority, memberEventsCompare);
     if (member_events_queue == NULL) {
         return;
     }
+    printf("not a criminal yet\n");
 
     MemberEvents_t member_events[em->members_count];
     for (size_t i = 0; i < em->members_count; i++)
@@ -632,7 +697,8 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         // Can set an invalid id/name here if get functions fail, is OK because handled later
         member_events[i] = (MemberEvents_t) { member_id, member_name, 0 };
     }
-    
+        printf("not a criminal yet\n");
+
     for (size_t i = 0; i < em->events_count; i++)
     {
         int const *members = eventGetMembers(em->events[i]);
@@ -655,6 +721,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
             member_events[member_index].events_count++;
         }
     }
+    printf("not a criminal yet\n");
 
     for (size_t i = 0; i < em->members_count; i++)
     {
@@ -664,7 +731,8 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         }
         pqInsert(member_events_queue, &member_events[i], &member_events[i]);
     }
-    
+        printf("not a criminal yet\n");
+
     FILE *file = fopen(file_name, "w");
     if (file == NULL) {
         return;
