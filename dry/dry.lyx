@@ -1,0 +1,476 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language hebrew
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+מת
+\begin_inset Quotes erd
+\end_inset
+
+מ תרגיל
+\family roman
+\series medium
+\shape up
+\size largest
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+1
+\end_layout
+
+\begin_layout Author
+מגישים: זואי עדן, איתי שפיגלמן
+\end_layout
+
+\begin_layout Section*
+
+\numeric on
+2
+\family roman
+\series bold
+\shape up
+\size larger
+\emph off
+\numeric off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+חלק יבש
+\end_layout
+
+\begin_layout Subsection*
+סעיף א
+\end_layout
+
+\begin_layout Standard
+
+\numeric on
+6
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+שגיאות תכנות:
+\end_layout
+
+\begin_layout Enumerate
+ה-
+\begin_inset Formula $\text{assert}$
+\end_inset
+
+ הראשון יעבור אם המשתנה 
+\begin_inset Formula $\text{NULL}$
+\end_inset
+
+ ולא להפך
+\end_layout
+
+\begin_layout Enumerate
+ב-
+\begin_inset Formula $\text{malloc}$
+\end_inset
+
+ לא מבקשים מספיק מקום עבור ה-
+\begin_inset Formula $\text{null terminator}$
+\end_inset
+
+ בסוף המערך 
+\begin_inset Formula $\text{out}$
+\end_inset
+
+, לכן השימוש ב-
+\begin_inset Formula $\text{strcpy}$
+\end_inset
+
+ לאחר מכן מסוכן
+\end_layout
+
+\begin_layout Enumerate
+מוחזר מצביע לתחילת המילה האחרונה בתוך רצף המילים שהכפלנו במקום לתחילת הרצף
+\end_layout
+
+\begin_layout Enumerate
+קטן שווה במקום קטן ממש בלולאה גורם לשכפול פעם אחת יותר מידי שזה באג לוגי
+ וגם גישה מסוכנת למקום בזכרון שלא ביקשנו.
+\end_layout
+
+\begin_layout Enumerate
+גם תחת ההנחה שהקלט תקין, עבור מקרה בו 
+\begin_inset Formula $\text{malloc}$
+\end_inset
+
+ יכשל לא יוחזר 
+\begin_inset Formula $\text{NULL}$
+\end_inset
+
+ כמו בדרישה.
+ עם זאת אם הקובץ יקומפל לא ב
+\begin_inset Quotes erd
+\end_inset
+
+דיבאג
+\begin_inset Quotes erd
+\end_inset
+
+ )הגדרת 
+\begin_inset Formula $\text{NDEBUG}$
+\end_inset
+
+( מעבר לכך שהפונקציה לא תחזיר 
+\begin_inset Formula $\text{NULL}$
+\end_inset
+
+ כנראה יהיה 
+\begin_inset Formula $\text{Segmentation Fault}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+ה-
+\begin_inset Formula $\text{include}$
+\end_inset
+
+ מחפש קודם כל בתיקייה של אותו הקובץ היות ומשתמשים ב-
+\begin_inset Formula $\text{""}$
+\end_inset
+
+, זה עובד אבל כדאי לעשות 
+\begin_inset Formula $\text{\#include <stdlib.h>}$
+\end_inset
+
+ במקרה של קבצי 
+\begin_inset Formula $\text{header}$
+\end_inset
+
+ סטנדרטים שלא אנחנו כתבנו ולא נמצאים בתיקיית הקובץ.
+ אם היו קבצי 
+\begin_inset Formula $\text{header}$
+\end_inset
+
+ עם שם זהה בתיקייה אז ה-
+\begin_inset Formula $\text{preprocessor}$
+\end_inset
+
+ היה מצרף את הקבצים הלא נכונים.
+\end_layout
+
+\begin_layout Standard
+
+\numeric on
+4
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+שגיאות קונבנציה:
+\end_layout
+
+\begin_layout Enumerate
+המשתנה 
+\begin_inset Formula $\text{LEN}$
+\end_inset
+
+ צריך להיות באותיות קטנות
+\end_layout
+
+\begin_layout Enumerate
+בתוך ה-
+\begin_inset Formula $\text{for}$
+\end_inset
+
+ צריך הזחה
+\end_layout
+
+\begin_layout Enumerate
+שם הפונקציה לא מנוסח כפעולה, היה צריך להיות בסגנון 
+\begin_inset Formula $\text{duplicateString}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+משתנה 
+\begin_inset Formula $\text{s}$
+\end_inset
+
+ לא קיצור ידוע או מילה ברורה
+\end_layout
+
+\begin_layout Subsection*
+סעיף ב
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include <stdlib.h> 
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <string.h> 
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <assert.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+char* stringDuplicator(char* string_to_duplicate, int times) {
+\end_layout
+
+\begin_layout Plain Layout
+
+	assert(string_to_duplicate);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	assert(times > 0);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	int len = strlen(string_to_duplicate);
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	char* out = malloc(len*times+1);
+\end_layout
+
+\begin_layout Plain Layout
+
+	assert(out);
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (out == NULL) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		return NULL;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+	for (int i=0; i<times; i++){
+\end_layout
+
+\begin_layout Plain Layout
+
+        strcpy(out + i*len,string_to_duplicate);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}          
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	return out; 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

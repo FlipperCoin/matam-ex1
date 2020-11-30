@@ -19,11 +19,14 @@ bool callAllFunctionsWithErrors_returnNullOrError() {
 	ASSERT_TEST(EM_SUCCESS == emAddMember(em_with_member_and_event, "m", 1), teardown);
 
 	ASSERT_TEST(NULL == createEventManager(NULL),teardown);
+	
 	ASSERT_TEST(EM_NULL_ARGUMENT == emAddEventByDate(NULL, "a", date, 1),teardown);
 	ASSERT_TEST(EM_NULL_ARGUMENT == emAddEventByDate(em, NULL, date, 1),teardown);
 	ASSERT_TEST(EM_NULL_ARGUMENT == emAddEventByDate(em, "a", NULL, 1),teardown);
 	ASSERT_TEST(EM_INVALID_EVENT_ID == emAddEventByDate(em, "a", date, -1),teardown);
 	ASSERT_TEST(EM_INVALID_DATE == emAddEventByDate(em, "a", invalid_date, 1),teardown);
+	ASSERT_TEST(EM_INVALID_DATE == emAddEventByDate(em, "a", invalid_date, -1),teardown);
+	ASSERT_TEST(EM_INVALID_DATE == emAddEventByDate(em_with_event, "a", invalid_date, 1),teardown);
 	ASSERT_TEST(EM_EVENT_ALREADY_EXISTS == emAddEventByDate(em_with_event, "a", date, 2),teardown);
 	ASSERT_TEST(EM_EVENT_ID_ALREADY_EXISTS == emAddEventByDate(em_with_event, "a", date2, 1),teardown);
 	ASSERT_TEST(EM_EVENT_ID_ALREADY_EXISTS == emAddEventByDate(em_with_event, "b", date, 1),teardown);
@@ -82,10 +85,11 @@ bool callAllFunctionsWithErrors_returnNullOrError() {
 	ASSERT_TEST(EM_NULL_ARGUMENT == emAddMemberToEvent(NULL, 1, 1),teardown);
 	ASSERT_TEST(EM_INVALID_MEMBER_ID == emAddMemberToEvent(em, -1, 1),teardown);
 	ASSERT_TEST(EM_INVALID_EVENT_ID == emAddMemberToEvent(em, 1, -1),teardown);
-	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emAddMemberToEvent(em, 0, 1),teardown);
-	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emAddMemberToEvent(em_with_member, 0, 1),teardown);
+	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emAddMemberToEvent(em, 0, 1),teardown);
+	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emAddMemberToEvent(em_with_member, 0, 1),teardown);
 	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emAddMemberToEvent(em_with_member, 1, 0),teardown);
 	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emAddMemberToEvent(em_with_member_and_event, 1, 0),teardown);
+	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emAddMemberToEvent(em_with_member_and_event, 0, 1),teardown);
 	ASSERT_TEST(EM_SUCCESS == emAddMemberToEvent(em_with_member_and_event, 1, 1),teardown); // setup
 	ASSERT_TEST(EM_EVENT_AND_MEMBER_ALREADY_LINKED == emAddMemberToEvent(em_with_member_and_event, 1, 1),teardown);
 	ASSERT_TEST(EM_SUCCESS == emAddEventByDiff(em_with_member_and_event, "b", 0, 2),teardown); // setup
@@ -104,9 +108,10 @@ bool callAllFunctionsWithErrors_returnNullOrError() {
 	ASSERT_TEST(EM_NULL_ARGUMENT == emRemoveMemberFromEvent(NULL, 1, 1),teardown);
 	ASSERT_TEST(EM_INVALID_MEMBER_ID == emRemoveMemberFromEvent(em, -1, 1),teardown);
 	ASSERT_TEST(EM_INVALID_EVENT_ID == emRemoveMemberFromEvent(em, 1, -1),teardown);
-	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emRemoveMemberFromEvent(em, 1, 1),teardown);
-	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emRemoveMemberFromEvent(em_with_member, 0, 1),teardown);
+	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emRemoveMemberFromEvent(em, 1, 1),teardown);
+	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emRemoveMemberFromEvent(em_with_member, 0, 1),teardown);
 	ASSERT_TEST(EM_EVENT_ID_NOT_EXISTS == emRemoveMemberFromEvent(em_with_member_and_event, 1, 0),teardown);
+	ASSERT_TEST(EM_MEMBER_ID_NOT_EXISTS == emRemoveMemberFromEvent(em_with_member_and_event, 0, 1),teardown);
 	ASSERT_TEST(EM_EVENT_AND_MEMBER_NOT_LINKED == emRemoveMemberFromEvent(em_with_member_and_event, 1, 1),teardown);
 	ASSERT_TEST(EM_SUCCESS == emAddMemberToEvent(em_with_member_and_event, 1, 1),teardown); // setup
 	ASSERT_TEST(EM_SUCCESS == emRemoveMemberFromEvent(em_with_member_and_event, 1, 1),teardown);
@@ -1485,7 +1490,7 @@ bool (*tests[]) (void) = {
         testEMTick,
 		create_dateGood_success,
 		destroy_containsStuff_removesAll,
-		//printMembers_memberWith0Events_notPrinted,
+		// printMembers_memberWith0Events_notPrinted,
 		getNextEvent_2EventsOnTheSameDate1_returnTheOneInsertedFirst,
 		getNextEvent_2EventsOnTheSameDate2_returnTheOneInsertedFirst,
 		printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder,
@@ -1515,7 +1520,7 @@ const char* testNames[] = {
         "testEMTick",
 		"create_dateGood_success",
 		"destroy_containsStuff_removesAll",
-		//"printMembers_memberWith0Events_notPrinted",
+		// "printMembers_memberWith0Events_notPrinted",
 		"getNextEvent_2EventsOnTheSameDate1_returnTheOneInsertedFirst",
 		"getNextEvent_2EventsOnTheSameDate2_returnTheOneInsertedFirst",
 		"printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder",

@@ -290,22 +290,22 @@ EventManagerResult emAddMemberToEvent(EventManager em, int member_id, int event_
         return EM_NULL_ARGUMENT;
     }
 
-    if (!isMemberIdValid(member_id)) {
-        return EM_INVALID_MEMBER_ID;
-    }
-
     if (!isEventIdValid(event_id)) {
         return EM_INVALID_EVENT_ID;
     }
 
-    int member_index = emFindMemberById(em, member_id);
-    if (member_index == NO_INDEX) {
-        return EM_MEMBER_ID_NOT_EXISTS;
+    if (!isMemberIdValid(member_id)) {
+        return EM_INVALID_MEMBER_ID;
     }
 
     int event_index = emFindEventById(em, event_id);
     if (event_index == NO_INDEX) {
         return EM_EVENT_ID_NOT_EXISTS;
+    }
+
+    int member_index = emFindMemberById(em, member_id);
+    if (member_index == NO_INDEX) {
+        return EM_MEMBER_ID_NOT_EXISTS;
     }
 
     Event event = em->events[event_index];
@@ -326,22 +326,22 @@ EventManagerResult emRemoveMemberFromEvent(EventManager em, int member_id, int e
         return EM_NULL_ARGUMENT;
     }
 
-    if (!isMemberIdValid(member_id)) {
-        return EM_INVALID_MEMBER_ID;
-    }
-
     if (!isEventIdValid(event_id)) {
         return EM_INVALID_EVENT_ID;
     }
 
-    // need to fail if member id is not known, no real need for the member's index
-    if (emFindMemberById(em, member_id) == NO_INDEX) {
-        return EM_MEMBER_ID_NOT_EXISTS;
+    if (!isMemberIdValid(member_id)) {
+        return EM_INVALID_MEMBER_ID;
     }
 
     int event_index = emFindEventById(em, event_id);
     if (event_index == NO_INDEX) {
         return EM_EVENT_ID_NOT_EXISTS;
+    }
+
+    // need to fail if member id is not known, no real need for the member's index
+    if (emFindMemberById(em, member_id) == NO_INDEX) {
+        return EM_MEMBER_ID_NOT_EXISTS;
     }
 
     Event event = em->events[event_index];
@@ -681,12 +681,10 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
     if (em == NULL || file_name == NULL) {
         return;
     }
-    printf("not a criminal yet\n");
     PriorityQueue member_events_queue = pqCreate(memberEventsCopy, memberEventsFree, memberEventsEquals, memberEventsCopyPriority, memberEventsFreePriority, memberEventsCompare);
     if (member_events_queue == NULL) {
         return;
     }
-    printf("not a criminal yet\n");
 
     MemberEvents_t member_events[em->members_count];
     for (size_t i = 0; i < em->members_count; i++)
@@ -697,7 +695,6 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         // Can set an invalid id/name here if get functions fail, is OK because handled later
         member_events[i] = (MemberEvents_t) { member_id, member_name, 0 };
     }
-        printf("not a criminal yet\n");
 
     for (size_t i = 0; i < em->events_count; i++)
     {
@@ -721,7 +718,6 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
             member_events[member_index].events_count++;
         }
     }
-    printf("not a criminal yet\n");
 
     for (size_t i = 0; i < em->members_count; i++)
     {
@@ -731,7 +727,6 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         }
         pqInsert(member_events_queue, &member_events[i], &member_events[i]);
     }
-        printf("not a criminal yet\n");
 
     FILE *file = fopen(file_name, "w");
     if (file == NULL) {
