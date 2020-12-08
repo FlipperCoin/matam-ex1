@@ -144,8 +144,7 @@ bool callAllFunctionsWithErrors_returnNullOrError() {
 	emPrintAllEvents(em, "");
 	emPrintAllResponsibleMembers(NULL, "a");
 	emPrintAllResponsibleMembers(em, NULL);
-	// TODO: remove comment
-	//emPrintAllResponsibleMembers(em, "");
+	emPrintAllResponsibleMembers(em, "");
 
 teardown:
 	dateDestroy(date);

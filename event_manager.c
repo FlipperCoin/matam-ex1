@@ -753,6 +753,7 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
 
     FILE *file = fopen(file_name, "w");
     if (file == NULL) {
+        pqDestroy(member_events_queue);
         return;
     }
 
