@@ -1190,7 +1190,6 @@ a,27.10.2020,Itai\n\
 a,28.10.2020,Itai\n\
 a,29.10.2020,Itai\n\
 a,30.10.2020,Itai\n\
-a,31.10.2020,Itai\n\
 a,1.11.2020,Itai\n\
 a,2.11.2020,Itai\n\
 a,3.11.2020,Itai\n\
@@ -1204,7 +1203,8 @@ a,10.11.2020,Itai\n\
 a,11.11.2020,Itai\n\
 a,12.11.2020,Itai\n\
 a,13.11.2020,Itai\n\
-a,14.11.2020,Itai";
+a,14.11.2020,Itai\n\
+a,15.11.2020,Itai";
 
 	emAddMember(em, "Itai", 1);
 	for (size_t i = 0; i < 45; i++)

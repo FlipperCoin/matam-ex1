@@ -6,6 +6,9 @@
 #define DATE_DAYS_IN_FEBRUARY_NO_LEAP 28
 #define DATE_DAYS_IN_FEBRUARY_LEAP 29
 
+#define SIMPLE true
+#define SIMPLE_MAX_DAY 30
+
 typedef enum Month {
     JANUARY = 1,
     FEBRUARY,
@@ -28,6 +31,10 @@ struct Date_t {
 };
 
 static int maxDayInMonth(int month, int year) {
+    if (SIMPLE) {
+        return SIMPLE_MAX_DAY;
+    }
+
     int maxDay;
     switch (month) {
         case JANUARY:
