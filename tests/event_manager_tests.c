@@ -1641,7 +1641,7 @@ bool testBigEventManager() {
     ASSERT_TEST(emRemoveMemberFromEvent(em, 8 , 1) == EM_MEMBER_ID_NOT_EXISTS, destroyDates2);
     ASSERT_TEST(emRemoveMemberFromEvent(em, 2 , 1) == EM_EVENT_AND_MEMBER_NOT_LINKED, destroyDates2);
    
-    emPrintAllEvents(em, "testPrintEventsYan.txt");
+    emPrintAllEvents(em, "test_out/testPrintEventsYan.txt");
     /*output should be:
     event1,1.12.2020,yan1,yan5
     event4,4.12.2020,yan1,yan5
@@ -1649,7 +1649,7 @@ bool testBigEventManager() {
     event3,10.12.2020,yan1,yan2
     */
 
-    emPrintAllResponsibleMembers(em, "testPrintMembersYan.txt");
+    emPrintAllResponsibleMembers(em, "test_out/testPrintMembersYan.txt");
     /*output should be:
     yan1,4
     yan5,3
@@ -1661,12 +1661,12 @@ bool testBigEventManager() {
     ASSERT_TEST(emTick(em, 4) == EM_SUCCESS, destroyDates2);
     ASSERT_TEST(emGetEventsAmount(em) == 2, destroyDates2);
 
-    emPrintAllEvents(em, "testPrintEventsYanAfterTick.txt");
+    emPrintAllEvents(em, "test_out/testPrintEventsYanAfterTick.txt");
      /*output should be:
     event2,5.12.2020,yan1,yan2,yan3,yan4,yan5
     event3,10.12.2020,yan1,yan2
     */
-    emPrintAllResponsibleMembers(em, "testPrintMembersYanAfterTick.txt");
+    emPrintAllResponsibleMembers(em, "test_out/testPrintMembersYanAfterTick.txt");
     /*output should be:
     yan1,2
     yan2,2

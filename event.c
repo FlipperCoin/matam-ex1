@@ -160,7 +160,7 @@ EventResult eventAddMember(Event event, int member_id) {
     }
 
     if(event->members_count == event->members_max_size) {
-        int *reallocated_members = reallocarray(event->members, event->members_count + MEMBERS_SIZE_INCREASE, sizeof(int));
+        int *reallocated_members = realloc(event->members, (event->members_count + MEMBERS_SIZE_INCREASE) * sizeof(int));
         if (reallocated_members == NULL) {
             return E_OUT_OF_MEMORY;
         }

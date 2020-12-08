@@ -1,7 +1,10 @@
 .vscode
 *.o
+*.zip
+
 event_manager
 date
 priority_queue
+
 build/
-*.zip
+test_out/

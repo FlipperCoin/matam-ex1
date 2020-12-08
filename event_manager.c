@@ -140,7 +140,7 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date afte
     }
 
     if (em->events_count == em->events_max_size) {
-        Event *reallocated_members = reallocarray(em->events, em->events_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Event));
+        Event *reallocated_members = (Event*)realloc(em->events, (em->events_max_size + ARRAY_REALLOC_AMOUNT) * sizeof(Event));
         if (reallocated_members == NULL) {
             return EM_OUT_OF_MEMORY;
         }
@@ -275,7 +275,7 @@ EventManagerResult emAddMember(EventManager em, char* member_name, int member_id
     }
 
     if (em->members_count == em->members_max_size) {
-        Member *reallocated_members = reallocarray(em->members, em->members_max_size + ARRAY_REALLOC_AMOUNT, sizeof(Member));
+        Member *reallocated_members = (Member*)realloc(em->members, (em->members_max_size + ARRAY_REALLOC_AMOUNT) * sizeof(Member));
         if (reallocated_members == NULL) {
             return EM_OUT_OF_MEMORY;
         }
