@@ -1382,27 +1382,106 @@ teardown:
 	return result;
 }
 
-// bool printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents() {
-// 	bool result = true;
+bool printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents() {
+	bool result = true;
+	Date date = dateCreate(1,11,2020);
+	EventManager em = createEventManager(date);
+	char *file_name = "printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents.txt";
+	char *expected = "Zoe,6\nRandom,6\nItai,5\nGershon,3";
 
+	emAddMember(em, "Zoe", 1);
+	emAddMember(em, "Itai", 0);
+	emAddMember(em, "Gershon", 4);
+	emAddMember(em, "Random", 7);
+	emAddMember(em, "Nobody", 5);
+	emAddEventByDiff(em, "a", 1, 0);
+	emAddEventByDiff(em, "b", 1, 1);
+	emAddEventByDiff(em, "c", 2, 2);
+	emAddEventByDiff(em, "d", 3, 3);
+	emAddEventByDiff(em, "e", 3, 4);
+	emAddEventByDiff(em, "e", 4, 5);
+	emAddEventByDiff(em, "e", 5, 6);
+	emAddMemberToEvent(em, 0, 0);
+	emAddMemberToEvent(em, 1, 3);
+	emAddMemberToEvent(em, 0, 2);
+	emAddMemberToEvent(em, 0, 1);
+	emAddMemberToEvent(em, 1, 1);
+	emAddMemberToEvent(em, 4, 0);
+	emAddMemberToEvent(em, 7, 3);
+	emAddMemberToEvent(em, 7, 2);
+	emAddMemberToEvent(em, 7, 1);
+	emAddMemberToEvent(em, 4, 4);
+	emAddMemberToEvent(em, 0, 5);
+	emAddMemberToEvent(em, 1, 5);
+	emAddMemberToEvent(em, 0, 6);
+	emAddMemberToEvent(em, 1, 4);
+	emAddMemberToEvent(em, 1, 6);
+	emAddMemberToEvent(em, 4, 6);
+	emAddMemberToEvent(em, 7, 6);
+	emAddMemberToEvent(em, 7, 5);
+	emAddMemberToEvent(em, 7, 4);
+	emAddMemberToEvent(em, 1, 0);
+	emPrintAllResponsibleMembers(em, file_name);
 
-// 	//ASSERT_TEST(,teardown);
+	FILE *f = fopen(file_name,"r");
+	ASSERT_TEST(f != NULL,teardown);
+	fseek(f, 0, SEEK_END); 
+	long size = ftell(f);
+	fseek(f, 0, SEEK_SET); 
+	char *buf = (char*)malloc(size+1);
+	fread(buf,1,size,f);
+	buf[size]='\0';
+	ASSERT_TEST(strcmp(buf,expected) == 0,teardown_all);
 
-// teardown:
+teardown_all:
+	free(buf);
+	fclose(f);
+teardown:
+	dateDestroy(date);
+	destroyEventManager(em);
+	return result;
+}
 
-// 	return result;
-// }
+bool printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId() {
+	bool result = true;
+	Date date = dateCreate(1,11,2020);
+	EventManager em = createEventManager(date);
+	char *file_name = "printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId.txt";
+	char *expected = "Itai,3\nZoe,3";
 
-// bool printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId() {
-// 	bool result = true;
+	emAddMember(em, "Zoe", 1);
+	emAddMember(em, "Itai", 0);
+	emAddEventByDiff(em, "a", 1, 0);
+	emAddEventByDiff(em, "b", 1, 1);
+	emAddEventByDiff(em, "c", 2, 2);
+	emAddEventByDiff(em, "d", 3, 3);
+	emAddEventByDiff(em, "e", 3, 4);
+	emAddMemberToEvent(em, 0, 0);
+	emAddMemberToEvent(em, 1, 3);
+	emAddMemberToEvent(em, 0, 2);
+	emAddMemberToEvent(em, 0, 1);
+	emAddMemberToEvent(em, 1, 4);
+	emAddMemberToEvent(em, 1, 1);
+	emPrintAllResponsibleMembers(em, file_name);
 
+	FILE *f = fopen(file_name,"r");
+	ASSERT_TEST(f != NULL,teardown);
+	fseek(f, 0, SEEK_END); 
+	long size = ftell(f);
+	fseek(f, 0, SEEK_SET); 
+	char *buf = (char*)malloc(size+1);
+	fread(buf,1,size,f);
+	buf[size]='\0';
+	ASSERT_TEST(strcmp(buf,expected) == 0,teardown_all);
 
-// 	//ASSERT_TEST(,teardown);
-
-// teardown:
-
-// 	return result;
-// }
+teardown_all:
+	free(buf);
+	fclose(f);
+teardown:
+	dateDestroy(date);
+	destroyEventManager(em);
+	return result;
+}
 
 bool printMembers_memberWith0Events_notPrinted() {
 	bool result = true;
@@ -1419,11 +1498,16 @@ bool printMembers_memberWith0Events_notPrinted() {
 
 	FILE *f = fopen(file_name,"r");
 	ASSERT_TEST(f != NULL,teardown);
-	char buf[100];
-	while (fgets(buf,100,f));
-	ASSERT_TEST(strcmp(buf,expected),teardown_all);
+	fseek(f, 0, SEEK_END); 
+	long size = ftell(f);
+	fseek(f, 0, SEEK_SET); 
+	char *buf = (char*)malloc(size+1);
+	fread(buf,1,size,f);
+	buf[size]='\0';
+	ASSERT_TEST(strcmp(buf,expected) == 0,teardown_all);
 
 teardown_all:
+	free(buf);
 	fclose(f);
 teardown:
 	dateDestroy(date);
@@ -1490,7 +1574,9 @@ bool (*tests[]) (void) = {
         testEMTick,
 		create_dateGood_success,
 		destroy_containsStuff_removesAll,
-		// printMembers_memberWith0Events_notPrinted,
+		printMembers_memberWith0Events_notPrinted,
+		printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId,
+		printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents,
 		getNextEvent_2EventsOnTheSameDate1_returnTheOneInsertedFirst,
 		getNextEvent_2EventsOnTheSameDate2_returnTheOneInsertedFirst,
 		printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder,
@@ -1520,7 +1606,9 @@ const char* testNames[] = {
         "testEMTick",
 		"create_dateGood_success",
 		"destroy_containsStuff_removesAll",
-		// "printMembers_memberWith0Events_notPrinted",
+		"printMembers_memberWith0Events_notPrinted",
+		"printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId",
+		"printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents",
 		"getNextEvent_2EventsOnTheSameDate1_returnTheOneInsertedFirst",
 		"getNextEvent_2EventsOnTheSameDate2_returnTheOneInsertedFirst",
 		"printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder",

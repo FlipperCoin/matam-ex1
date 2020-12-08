@@ -493,6 +493,31 @@ static void sortIntArray(int *array, size_t size) {
     qsort(array, size, sizeof(int), intCompare);
 }
 
+static int getMembersNames(EventManager em, int const *members, int members_count, char const *members_delimeter, char const **members_names) {
+    int members_string_size = 1; // '\0' terminator in the end
+    
+    for (size_t i = 0; i < members_count; i++)
+    {
+        int member_index = emFindMemberById(em, members[i]);
+        if (member_index == NO_INDEX) {
+            return -1;
+        }
+        Member member = em->members[member_index];
+        char const *member_name = memberGetName(member);
+        if (member_name == NULL) {
+            return -1;
+        }
+
+        members_names[i] = member_name;
+        members_string_size += strlen(member_name);
+        if (i < (members_count - 1)) {
+            members_string_size += strlen(members_delimeter);
+        }
+    }
+
+    return members_string_size;
+}
+
 static char* getMembersString(EventManager em, Event event) {
     int const *members = eventGetMembers(event);
     if (members == NULL) {
@@ -511,28 +536,13 @@ static char* getMembersString(EventManager em, Event event) {
     members = (int const *)members_temp;
 
     char const *members_names[members_count]; 
-    char *members_delimeter = ",";
-    int members_string_size = 1; // '\0' terminator in the end
+    char const *members_delimeter = ",";
     
-    for (size_t i = 0; i < members_count; i++)
-    {
-        int member_index = emFindMemberById(em, members[i]);
-        if (member_index == NO_INDEX) {
-            return NULL;
-        }
-        Member member = em->members[member_index];
-        char const *member_name = memberGetName(member);
-        if (member_name == NULL) {
-            return NULL;
-        }
-
-        members_names[i] = member_name;
-        members_string_size += strlen(member_name);
-        if (i < (members_count - 1)) {
-            members_string_size += strlen(members_delimeter);
-        }
+    int members_string_size = getMembersNames(em, members, members_count, members_delimeter, members_names);
+    if (members_string_size == -1) {
+        return NULL;
     }
-    
+
     char *members_string = (char*)malloc(members_string_size * sizeof(char));
     char *members_string_end = members_string;
     for (size_t i = 0; i < members_count; i++)
@@ -564,30 +574,32 @@ static void orderEvents(EventManager em, Event *buffer) {
     }
 }
 
-static void printEventToFile(EventManager em, Event event, FILE *file) {
+static bool printEventToFile(EventManager em, Event event, FILE *file) {
     Date event_date = eventGetDate(event);
     if (event_date == NULL) {
-        return;
+        return false;
     }
     
     int day, month, year;
     if (!dateGet(event_date, &day, &month, &year)) {
-        return;
+        return false;
     }
     
     char const *event_name = eventGetName(event);
     if (event_name == NULL) {
-        return;
+        return false;
     }
 
     char *members_string = getMembersString(em, event);
     if (members_string == NULL) {
-        return;
+        return false;
     }
     
     fprintf(file, "%s,%d.%d.%d,%s", event_name, day, month, year, members_string);
 
     free(members_string);
+
+    return true;
 }
 
 void emPrintAllEvents(EventManager em, const char* file_name) {
@@ -616,9 +628,7 @@ void emPrintAllEvents(EventManager em, const char* file_name) {
     {
         Event event = ordered_events[i];
         
-        printEventToFile(em, event, file);
-        
-        if (i < (em->events_count - 1)) {
+        if (printEventToFile(em, event, file) && i < (em->events_count - 1)) {
             fprintf(file, "\n");
         }
     }
@@ -746,8 +756,14 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name) {
         return;
     }
 
+    int size = pqGetSize(member_events_queue);
+    int count = 0;
     PQ_FOREACH(MemberEvents*, member_event, member_events_queue) {
         fprintf(file, "%s,%ld", member_event->member_name, member_event->events_count);
+        count++;
+        if (count != size) {
+            fprintf(file, "\n");
+        }
     }       
     
     pqDestroy(member_events_queue);
