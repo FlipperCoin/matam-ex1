@@ -81,6 +81,10 @@ void dateDestroy(Date date) {
 }
 
 Date dateCopy(Date date) {
+    if (date == NULL) {
+        return NULL;
+    }
+
     Date date_copy = dateCreate(date->day, date->month, date->year);
     return date_copy; // fine if NULL
 }
@@ -98,6 +102,10 @@ bool dateGet(Date date, int* day, int* month, int* year) {
 }
 
 int dateCompare(Date date1, Date date2) {
+    if (date1 == NULL || date2 == NULL) {
+        return 0;
+    }
+
     int year_diff = date1->year - date2->year;
     if (year_diff != 0) return year_diff;
 
@@ -109,7 +117,9 @@ int dateCompare(Date date1, Date date2) {
 }
 
 void dateTick(Date date) {
-    if (date == NULL) return;
+    if (date == NULL) {
+        return;
+    }
 
     if (date->day != maxDayInMonth(date->month, date->year)) {
         date->day++;
