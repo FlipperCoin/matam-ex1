@@ -64,7 +64,7 @@ void destroyEventManager(EventManager em) {
     if (em == NULL) {
         return;
     }
-    
+
     for (size_t i = 0; i < em->events_count; i++)
     {
         eventDestroy(em->events[i]);
@@ -596,13 +596,12 @@ static bool printEventToFile(EventManager em, Event event, FILE *file) {
 
     char *members_string = getMembersString(em, event);
     if (members_string == NULL) {
-        return false;
+        fprintf(file, "%s,%d.%d.%d", event_name, day, month, year);
+        return true;
     }
     
     fprintf(file, "%s,%d.%d.%d,%s", event_name, day, month, year, members_string);
-
     free(members_string);
-
     return true;
 }
 
