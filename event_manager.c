@@ -61,6 +61,10 @@ EventManager createEventManager(Date after_date) {
 }
 
 void destroyEventManager(EventManager em) {
+    if (em == NULL) {
+        return;
+    }
+    
     for (size_t i = 0; i < em->events_count; i++)
     {
         eventDestroy(em->events[i]);

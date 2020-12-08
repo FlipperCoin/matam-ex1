@@ -4,3 +4,4 @@ event_manager
 date
 priority_queue
 build/
+*.zip

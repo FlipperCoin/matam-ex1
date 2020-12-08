@@ -2,6 +2,8 @@
 #include "../event_manager.h"
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 bool callAllFunctionsWithErrors_returnNullOrError() {
 	bool result = true;
@@ -993,7 +995,7 @@ bool printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder() 
 	bool result = true;
 	Date date = dateCreate(1,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder.txt";
+	char *file_name = "test_out/printAllEvents_severalMembers1_printMembersInEachEventInAscendingIdOrder.txt";
 	char *expected = "a,1.11.2020,Itai,Zoe";
 
 	emAddMember(em, "Zoe", 1);
@@ -1021,7 +1023,7 @@ bool printAllEvents_severalMembers2_printMembersInEachEventInAscendingIdOrder() 
 	bool result = true;
 	Date date = dateCreate(1,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_severalMembers2_printMembersInEachEventInAscendingIdOrder.txt";
+	char *file_name = "test_out/printAllEvents_severalMembers2_printMembersInEachEventInAscendingIdOrder.txt";
 	char *expected = "a,1.11.2020,Itai,Zoe";
 
 	emAddMember(em, "Zoe", 1);
@@ -1052,7 +1054,7 @@ bool printAllEvents_severalEvents_printAscendingDateOrder() {
 	Date date2 = dateCreate(2,12,2020);
 	Date date3 = dateCreate(1,1,2021);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_severalEvents_printAscendingDateOrder.txt";
+	char *file_name = "test_out/printAllEvents_severalEvents_printAscendingDateOrder.txt";
 	char expected[] = "a,5.11.2020,Itai,Zoe\nb,2.12.2020,Itai,Zoe,Gershon\nc,1.1.2021,Gershon";
 
 	emAddMember(em, "Zoe", 1);
@@ -1095,7 +1097,7 @@ bool printAllEvents_moreThan25Events_printCorrectly() {
 	bool result = true;
 	Date date = dateCreate(1,10,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_moreThan25Events_printCorrectly.txt";
+	char *file_name = "test_out/printAllEvents_moreThan25Events_printCorrectly.txt";
 	char expected[] = "a,1.10.2020,Itai\n\
 a,2.10.2020,Itai\n\
 a,3.10.2020,Itai\n\
@@ -1159,7 +1161,7 @@ bool printAllEvents_moreThan40Events_printCorrectly() {
 	bool result = true;
 	Date date = dateCreate(1,10,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_moreThan40Events_printCorrectly.txt";
+	char *file_name = "test_out/printAllEvents_moreThan40Events_printCorrectly.txt";
 	char expected[] = "a,1.10.2020,Itai\n\
 a,2.10.2020,Itai\n\
 a,3.10.2020,Itai\n\
@@ -1237,7 +1239,7 @@ bool printAllEvents_moreThan25Members_printCorrectly() {
 	bool result = true;
 	Date date = dateCreate(1,10,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_moreThan25Members_printCorrectly.txt";
+	char *file_name = "test_out/printAllEvents_moreThan25Members_printCorrectly.txt";
 	char expected[] = "a,1.10.2020,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30";
 
 	emAddEventByDiff(em, "a", 0, 0);
@@ -1273,7 +1275,7 @@ bool printAllEvents_moreThan40Members_printCorrectly() {
 	bool result = true;
 	Date date = dateCreate(1,10,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_moreThan40Members_printCorrectly.txt";
+	char *file_name = "test_out/printAllEvents_moreThan40Members_printCorrectly.txt";
 	char expected[] = "a,1.10.2020,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45";
 
 	emAddEventByDiff(em, "a", 0, 0);
@@ -1316,7 +1318,7 @@ bool printAllEvents_randomAllOverThePlace_printCorrectly() {
 	Date date3 = dateCreate(1,1,2021);
 	Date date4 = dateCreate(22,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printAllEvents_randomAllOverThePlace_printCorrectly.txt";
+	char *file_name = "test_out/printAllEvents_randomAllOverThePlace_printCorrectly.txt";
 	char expected[] = "a,5.11.2020,Itai1,Itai,Gershon\n\
 c,5.11.2020,Zoe,Itai,Gershon1\n\
 a,22.11.2020,Itai1,Itai,Gershon,Gershon1\n\
@@ -1385,7 +1387,7 @@ bool printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOf
 	bool result = true;
 	Date date = dateCreate(1,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents.txt";
+	char *file_name = "test_out/printMembers_severalMembersWithSeveralEvents_printDescendingOrderOnAmountOfEvents.txt";
 	char *expected = "Zoe,6\nRandom,6\nItai,5\nGershon,3";
 
 	emAddMember(em, "Zoe", 1);
@@ -1445,7 +1447,7 @@ bool printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId() {
 	bool result = true;
 	Date date = dateCreate(1,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId.txt";
+	char *file_name = "test_out/printMembers_2MembersWithTheSameAmountOfEvents_printAscendingId.txt";
 	char *expected = "Itai,3\nZoe,3";
 
 	emAddMember(em, "Zoe", 1);
@@ -1486,7 +1488,7 @@ bool printMembers_memberWith0Events_notPrinted() {
 	bool result = true;
 	Date date = dateCreate(1,11,2020);
 	EventManager em = createEventManager(date);
-	char *file_name = "printMembers_memberWith0Events_notPrinted.txt";
+	char *file_name = "test_out/printMembers_memberWith0Events_notPrinted.txt";
 	char *expected = "Zoe,1";
 
 	emAddMember(em, "Itai", 0);
@@ -1632,24 +1634,32 @@ const char* testNames[] = {
 		NULL
 };
 
+struct stat st = {0};
+#define NUMBER_TESTS 29
+
 int main(int argc, char *argv[]) {
+	if (stat("test_out", &st) == -1) {
+		mkdir("test_out", 0700);
+	}
+
     if (argc == 1) {
         for (int test_idx = 0; testNames[test_idx]!=NULL; test_idx++) {
             RUN_TEST(tests[test_idx], testNames[test_idx]);
         }
         return 0;
     }
-    // if (argc != 2) {
-    //     fprintf(stdout, "Usage: event_manager_tests <test index>\n");
-    //     return 0;
-    // }
+    
+	if (argc != 2) {
+        fprintf(stdout, "Usage: event_manager_tests <test index>\n");
+        return 0;
+    }
 
-    // int test_idx = strtol(argv[1], NULL, 10);
-    // if (test_idx < 1 || test_idx > NUMBER_TESTS) {
-    //     fprintf(stderr, "Invalid test index %d\n", test_idx);
-    //     return 0;
-    // }
+    int test_idx = strtol(argv[1], NULL, 10);
+    if (test_idx < 1 || test_idx > NUMBER_TESTS) {
+        fprintf(stderr, "Invalid test index %d\n", test_idx);
+        return 0;
+    }
 
-    // RUN_TEST(tests[test_idx - 1], testNames[test_idx - 1]);
+    RUN_TEST(tests[test_idx - 1], testNames[test_idx - 1]);
     return 0;
 }
