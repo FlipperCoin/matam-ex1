@@ -2,10 +2,10 @@ GCC_FLAGS = -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
 CC = gcc
 LINKAGE_OPTIONS = -L. -lpriority_queue
 
-event_manager: tests/event_manager_tests.c event_manager.o event.o member.o date.o
-	$(CC) $(GCC_FLAGS) -o $@ $^ $(LINKAGE_OPTIONS)
+event_manager: tests/event_manager_example_tests.c event_manager.o event.o member.o date.o
+	$(CC) $(GCC_FLAGS) $(LINKAGE_OPTIONS) -o $@ $^
 
-priority_queue: priority_queue.o tests/pq_example_tests.c
+priority_queue: tests/pq_example_tests.c priority_queue.o
 	$(CC) $(GCC_FLAGS) -o $@ $^
 
 %.o: %.c
@@ -21,7 +21,8 @@ clean_all: clean
 	rm -f Submission.zip
 
 submission:
-	zip -j Submission.zip dry/dry.pdf event_manager.c date.c member.h member.c event.h event.c priority_queue.c Makefile  
+	rm -f Submission.zip
+	zip -j Submission.zip dry/dry.pdf event_manager.c date.c member.h member.c event.h event.c priority_queue.c makefile  
 
 test: test_priority_queue test_event_manager 
 
