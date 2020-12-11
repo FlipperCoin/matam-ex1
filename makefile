@@ -1,11 +1,11 @@
-GCC_FLAGS = -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
-CC = gcc
-LINKAGE_OPTIONS = -L. -lpriority_queue
+GCC_FLAGS =-std=c99 -Wall -pedantic-errors -Werror -DNDEBUG
+CC=gcc
+LINKAGE_OPTIONS=-L. -lpriority_queue
 
-event_manager: tests/event_manager_example_tests.c event_manager.o event.o member.o date.o
-	$(CC) $(GCC_FLAGS) $(LINKAGE_OPTIONS) -o $@ $^
+event_manager: tests/event_manager_tests.c event_manager.o event.o member.o date.o
+	$(CC) -o $@ $(GCC_FLAGS) tests/event_manager_tests.c $(LINKAGE_OPTIONS) event_manager.o event.o member.o date.o
 
-priority_queue: tests/pq_example_tests.c priority_queue.o
+priority_queue: tests/priority_queue_tests.c priority_queue.o
 	$(CC) $(GCC_FLAGS) -o $@ $^
 
 %.o: %.c

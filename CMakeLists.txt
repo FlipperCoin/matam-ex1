@@ -8,7 +8,8 @@ set(CMAKE_C_FLAGS ${MTM_FLAGS_DEBUG})
 
 #link_directories(.)
 
-add_executable(event_manager tests/event_manager_tests.c event_manager.c date.c event.c member.c priority_queue.c)
+add_executable(priority_queue tests/priority_queue_tests.c priority_queue.c)
+#add_executable(event_manager tests/event_manager_tests.c event_manager.c date.c event.c member.c priority_queue.c)
 
 #target_link_libraries(event_manager libpriority_queue.a)
 
