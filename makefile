@@ -3,7 +3,7 @@ CC=gcc
 LINKAGE_OPTIONS=-L. -lpriority_queue
 
 event_manager: tests/event_manager_tests.c event_manager.o event.o member.o date.o
-	$(CC) -o $@ $(GCC_FLAGS) tests/event_manager_tests.c $(LINKAGE_OPTIONS) event_manager.o event.o member.o date.o
+	$(CC) -o $@ $(GCC_FLAGS) tests/event_manager_tests.c event_manager.o event.o member.o date.o $(LINKAGE_OPTIONS)
 
 priority_queue: tests/priority_queue_tests.c priority_queue.o
 	$(CC) $(GCC_FLAGS) -o $@ $^
