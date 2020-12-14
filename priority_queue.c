@@ -10,7 +10,7 @@ typedef struct Node_t* Node;
 
 struct Node_t
 {
-    PQElement pqElement;
+    PQElement pq_element;
     PQElementPriority priority;
     struct Node_t* next;
 
@@ -22,12 +22,12 @@ struct Node_t
 };
 
 
-static Node createNewNode(PQElement pqElement, PQElementPriority priority,
+static Node createNewNode(PQElement pq_element, PQElementPriority priority,
                         CopyPQElement copy_element,
                         FreePQElement free_element,
                         CopyPQElementPriority copy_priority,
                         FreePQElementPriority free_priority){
-    if(copy_element == NULL || free_element == NULL || copy_priority == NULL || free_priority == NULL || pqElement == NULL || priority == NULL){
+    if(copy_element == NULL || free_element == NULL || copy_priority == NULL || free_priority == NULL || pq_element == NULL || priority == NULL){
         return NULL;
     }   
     
@@ -41,7 +41,7 @@ static Node createNewNode(PQElement pqElement, PQElementPriority priority,
     node->copy_priority = copy_priority;
     node->free_priority = free_priority;
 
-    node->pqElement = copy_element(pqElement);
+    node->pq_element = copy_element(pq_element);
     node->priority = copy_priority(priority);
     node->next = NULL;
 
@@ -55,7 +55,7 @@ static Node copyNode(Node node)
         return NULL;
     }
 
-    Node new_node = createNewNode(node->pqElement, node->priority, node->copy_element, node->free_element, node->copy_priority, node->free_priority);
+    Node new_node = createNewNode(node->pq_element, node->priority, node->copy_element, node->free_element, node->copy_priority, node->free_priority);
     if(new_node == NULL){
         return NULL;
     }
@@ -65,10 +65,12 @@ static Node copyNode(Node node)
 
 void freeNode(Node node){
     if(node != NULL){
-        if(node->pqElement != NULL )
-            node->free_element(node->pqElement);
-        if(node->priority != NULL)
+        if(node->pq_element != NULL ) {
+            node->free_element(node->pq_element);
+        }
+        if(node->priority != NULL) {
             node->free_priority(node->priority);
+        }
         free(node);
     }
 }
@@ -76,12 +78,15 @@ void freeNode(Node node){
 
 void freeAllNodes(Node node){
     if(node != NULL){
-        if(node->pqElement != NULL)
-            node->free_element(node->pqElement);
-        if(node->priority  != NULL)
+        if(node->pq_element != NULL) {
+            node->free_element(node->pq_element);
+        }
+        if(node->priority  != NULL) {
             node->free_priority(node->priority);
-        if(node->next != NULL)
+        }
+        if(node->next != NULL) {
             freeAllNodes(node->next);
+        }
         free(node);
     }
 }
@@ -258,7 +263,7 @@ PriorityQueueResult pqChangePriority(PriorityQueue queue,
         return PQ_NULL_ARGUMENT;
     }
 
-    if(queue->equal_elements(queue->first_element->pqElement, element) &&
+    if(queue->equal_elements(queue->first_element->pq_element, element) &&
        queue->compare_priorities(queue->first_element->priority, old_priority) == 0) {
         queue->iterator = queue->first_element->next;
         freeNode(queue->first_element);
@@ -269,7 +274,7 @@ PriorityQueueResult pqChangePriority(PriorityQueue queue,
 
     queue->iterator = queue->first_element;
     while(queue->iterator->next != NULL){
-        if(queue->equal_elements(queue->iterator->next->pqElement, element) &&
+        if(queue->equal_elements(queue->iterator->next->pq_element, element) &&
                 queue->compare_priorities(queue->iterator->next->priority, old_priority) == 0){
             Node temp = queue->iterator->next;
             queue->iterator->next = queue->iterator->next->next;
@@ -295,7 +300,7 @@ PriorityQueueResult pqRemove(PriorityQueue queue){
     queue->size--;
     queue->iterator = queue->first_element->next;
     queue->free_priority(queue->first_element->priority);
-    queue->free_element(queue->first_element->pqElement);
+    queue->free_element(queue->first_element->pq_element);
     free(queue->first_element);
     queue->first_element = queue->iterator;
     queue->iterator = NULL;
@@ -309,7 +314,7 @@ PriorityQueueResult pqRemoveElement(PriorityQueue queue, PQElement element){
         return PQ_NULL_ARGUMENT;
     }
 
-    if(queue->equal_elements(queue->first_element->pqElement, element)) {
+    if(queue->equal_elements(queue->first_element->pq_element, element)) {
         queue->iterator = queue->first_element->next;
         freeNode(queue->first_element);
         queue->first_element = queue->iterator;
@@ -319,7 +324,7 @@ PriorityQueueResult pqRemoveElement(PriorityQueue queue, PQElement element){
     }
     queue->iterator = queue->first_element;
     while(queue->iterator->next != NULL){
-        if(queue->equal_elements(queue->iterator->next->pqElement, element)){
+        if(queue->equal_elements(queue->iterator->next->pq_element, element)){
             Node temp_node = queue->iterator->next;
             queue->iterator->next = queue->iterator->next->next;
             freeNode(temp_node);
@@ -342,7 +347,7 @@ PQElement pqGetFirst(PriorityQueue queue){
     if(queue->first_element == NULL){
         return NULL;
     }
-    return queue->first_element->pqElement;
+    return queue->first_element->pq_element;
 }
 
 
@@ -357,7 +362,7 @@ PQElement pqGetNext(PriorityQueue queue){
     if(queue->iterator == NULL){
         return NULL;
     }
-    return queue->iterator->pqElement;
+    return queue->iterator->pq_element;
 }
 
 
